@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 
 export interface Domain {
@@ -11,6 +12,8 @@ interface DomainContextType {
   selectedDomains: Domain[];
   selectDomain: (domain: Domain) => void;
   removeDomain: (domainId: string) => void;
+  moveUp: (index: number) => void;
+  moveDown: (index: number) => void;
   reorderDomains: (startIndex: number, endIndex: number) => void;
   clearSelection: () => void;
   resetOrder: () => void;
@@ -50,6 +53,28 @@ export const DomainProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     }
   };
 
+  const moveUp = (index: number) => {
+    if (index <= 0) return; // Already at the top
+    
+    const updatedOrder = [...selectedDomains];
+    const temp = updatedOrder[index];
+    updatedOrder[index] = updatedOrder[index - 1];
+    updatedOrder[index - 1] = temp;
+    
+    setSelectedDomains(updatedOrder);
+  };
+  
+  const moveDown = (index: number) => {
+    if (index >= selectedDomains.length - 1) return; // Already at the bottom
+    
+    const updatedOrder = [...selectedDomains];
+    const temp = updatedOrder[index];
+    updatedOrder[index] = updatedOrder[index + 1];
+    updatedOrder[index + 1] = temp;
+    
+    setSelectedDomains(updatedOrder);
+  };
+
   const reorderDomains = (startIndex: number, endIndex: number) => {
     const result = Array.from(selectedDomains);
     const [removed] = result.splice(startIndex, 1);
@@ -77,6 +102,8 @@ export const DomainProvider: React.FC<{ children: ReactNode }> = ({ children }) 
         selectedDomains,
         selectDomain,
         removeDomain,
+        moveUp,
+        moveDown,
         reorderDomains,
         clearSelection,
         resetOrder,
