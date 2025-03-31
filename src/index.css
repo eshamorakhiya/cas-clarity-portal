@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -35,19 +36,12 @@
     --radius: 0.5rem;
 
     --sidebar-background: 0 0% 98%;
-
     --sidebar-foreground: 240 5.3% 26.1%;
-
     --sidebar-primary: 240 5.9% 10%;
-
     --sidebar-primary-foreground: 0 0% 98%;
-
     --sidebar-accent: 240 4.8% 95.9%;
-
     --sidebar-accent-foreground: 240 5.9% 10%;
-
     --sidebar-border: 220 13% 91%;
-
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
 
@@ -96,6 +90,56 @@
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-cas-background text-foreground font-sans;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-medium tracking-tight;
+  }
+  
+  h1 {
+    @apply text-3xl;
+  }
+  
+  h2 {
+    @apply text-2xl;
+  }
+  
+  h3 {
+    @apply text-xl;
+  }
+  
+  h4 {
+    @apply text-lg;
+  }
+}
+
+@layer components {
+  .cas-card {
+    @apply bg-white rounded-lg border border-cas-border shadow-card transition-all duration-200 hover:shadow-elevated;
+  }
+  
+  .cas-btn-primary {
+    @apply bg-cas-primary text-white hover:bg-cas-dark transition-colors duration-200;
+  }
+  
+  .cas-btn-secondary {
+    @apply bg-white text-cas-primary border border-cas-primary hover:bg-cas-light transition-colors duration-200;
+  }
+  
+  .cas-input {
+    @apply border border-cas-border rounded-md px-4 py-2 focus:ring-2 focus:ring-cas-primary/30 focus:border-cas-primary transition-all duration-200;
+  }
+  
+  .cas-label {
+    @apply text-sm font-medium text-gray-700 mb-1;
+  }
+  
+  .cas-domain-card {
+    @apply cas-card p-4 cursor-pointer transition-all duration-150;
+  }
+  
+  .cas-domain-card-selected {
+    @apply ring-2 ring-cas-primary bg-cas-light;
   }
 }

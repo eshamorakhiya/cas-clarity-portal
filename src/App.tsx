@@ -1,6 +1,6 @@
 
 import { Toaster } from "@/components/ui/toaster";
-import { Toaster as Sonner } from "@/components/ui/sonner";
+import { Toaster as Sonner } from "sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
@@ -17,7 +17,14 @@ import { AuthProvider } from "./contexts/AuthContext";
 import { DomainProvider } from "./contexts/DomainContext";
 import { SessionProvider } from "./contexts/SessionContext";
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchOnWindowFocus: false,
+      retry: 1,
+    },
+  },
+});
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
@@ -26,7 +33,15 @@ const App = () => (
         <DomainProvider>
           <SessionProvider>
             <Toaster />
-            <Sonner />
+            <Sonner 
+              position="bottom-right"
+              expand={false}
+              richColors
+              toastOptions={{
+                duration: 4000,
+                className: "rounded-lg border border-cas-border text-sm",
+              }}
+            />
             <BrowserRouter>
               <Routes>
                 <Route path="/" element={<Index />} />

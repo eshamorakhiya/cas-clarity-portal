@@ -11,23 +11,91 @@ import {
   LogOut, 
   Users, 
   BarChart, 
-  Headset 
+  Headset,
+  ChevronRight,
+  Bell
 } from 'lucide-react';
+import { toast } from "sonner";
 
 const DemoIndicator = () => (
-  <div className="fixed top-2 right-2 bg-yellow-400 text-yellow-800 text-xs px-2 py-1 rounded-full font-medium animate-pulse">
+  <div className="fixed top-2 right-2 bg-amber-100 text-amber-800 text-xs px-2 py-1 rounded-full font-medium">
     Demo Mode
   </div>
 );
 
+const NotificationBell = () => {
+  const handleNotificationClick = () => {
+    toast.info("No new notifications", {
+      position: "bottom-right"
+    });
+  };
+
+  return (
+    <Button 
+      variant="ghost" 
+      size="icon" 
+      className="relative" 
+      onClick={handleNotificationClick}
+    >
+      <Bell size={20} className="text-gray-600" />
+      <span className="absolute top-1 right-1 w-2 h-2 bg-cas-primary rounded-full"></span>
+    </Button>
+  );
+};
+
 const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { isAuthenticated, logout, patientId } = useAuth();
+  const { isAuthenticated, logout, patientId, clinicianId } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
 
   const handleLogout = () => {
     logout();
+    toast.success("Logged out successfully", {
+      position: "bottom-right"
+    });
     navigate('/');
+  };
+
+  const getBreadcrumbs = () => {
+    const pathnames = location.pathname.split('/').filter(x => x);
+    
+    let breadcrumbPath = '';
+    let breadcrumbLabel = '';
+    
+    switch(pathnames[0]) {
+      case 'dashboard':
+        breadcrumbLabel = 'Dashboard';
+        break;
+      case 'assessment-type':
+        breadcrumbLabel = 'Assessment Type';
+        break;
+      case 'domains':
+        breadcrumbLabel = 'Domain Selection';
+        break;
+      case 'monitoring':
+        breadcrumbLabel = 'Session Monitoring';
+        break;
+      case 'summary':
+        breadcrumbLabel = 'Session Summary';
+        break;
+      case 'multi-session':
+        breadcrumbLabel = 'Session History';
+        break;
+      default:
+        breadcrumbLabel = pathnames[0] ? pathnames[0].charAt(0).toUpperCase() + pathnames[0].slice(1) : '';
+    }
+    
+    return (
+      <div className="flex items-center text-sm">
+        <Link to="/dashboard" className="text-gray-500 hover:text-cas-primary">Home</Link>
+        {breadcrumbLabel && (
+          <>
+            <ChevronRight size={16} className="mx-2 text-gray-400" />
+            <span className="font-medium">{breadcrumbLabel}</span>
+          </>
+        )}
+      </div>
+    );
   };
 
   if (!isAuthenticated) {
@@ -37,14 +105,14 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   return (
     <div className="min-h-screen bg-cas-background flex">
       {/* Sidebar Navigation */}
-      <div className="w-64 bg-white shadow-md flex flex-col">
-        <div className="p-6 border-b">
+      <div className="w-64 bg-white shadow-md flex flex-col border-r border-cas-border">
+        <div className="p-6 border-b border-cas-border">
           <div className="flex items-center">
             <div className="rounded-md bg-cas-primary text-white font-bold text-xl p-2 mr-2">CAS</div>
             <div className="text-gray-700 font-medium">Admin Portal</div>
           </div>
           <div className="mt-2 text-xs text-gray-500">
-            Connected to Patient: {patientId}
+            Clinician ID: {clinicianId} | Patient: {patientId}
           </div>
         </div>
         
@@ -89,10 +157,10 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
           />
         </nav>
         
-        <div className="p-4 border-t">
+        <div className="p-4 border-t border-cas-border">
           <Button 
             variant="ghost" 
-            className="w-full justify-start text-gray-600 hover:text-gray-900 hover:bg-gray-100"
+            className="w-full justify-start text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-colors duration-200"
             onClick={handleLogout}
           >
             <LogOut size={18} className="mr-2" />
@@ -103,7 +171,27 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
       
       {/* Main Content */}
       <div className="flex-1 flex flex-col">
-        <main className="flex-1 p-6">
+        {/* Header */}
+        <header className="h-16 bg-white border-b border-cas-border px-6 flex items-center justify-between">
+          <div>
+            {getBreadcrumbs()}
+          </div>
+          <div className="flex items-center space-x-2">
+            <NotificationBell />
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className="font-medium text-gray-700 flex items-center gap-2"
+            >
+              <div className="w-8 h-8 rounded-full bg-cas-primary/10 text-cas-primary flex items-center justify-center">
+                {clinicianId?.substring(0, 2) || "C"}
+              </div>
+              <span>Clinician</span>
+            </Button>
+          </div>
+        </header>
+        
+        <main className="flex-1 p-6 overflow-auto">
           {children}
         </main>
       </div>
