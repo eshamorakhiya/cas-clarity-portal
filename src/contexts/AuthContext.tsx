@@ -4,8 +4,9 @@ import { useToast } from "@/components/ui/use-toast";
 
 interface AuthContextType {
   isAuthenticated: boolean;
-  userId: string | null;
-  login: (userId: string) => Promise<boolean>;
+  clinicianId: string | null;
+  patientId: string | null;
+  login: (clinicianId: string, patientId: string) => Promise<boolean>;
   logout: () => void;
 }
 
@@ -13,24 +14,25 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [userId, setUserId] = useState<string | null>(null);
+  const [clinicianId, setClinicianId] = useState<string | null>(null);
+  const [patientId, setPatientId] = useState<string | null>(null);
   const { toast } = useToast();
 
-  const login = async (id: string): Promise<boolean> => {
-    // For prototype, we're just checking if ID is valid format
-    // and specifically allowing "1234" as demo patient
-    if (/^\d{4,6}$/.test(id)) {
+  const login = async (cId: string, pId: string): Promise<boolean> => {
+    // For prototype, we're just checking if clinician ID is valid format
+    if (/^\d{4,6}$/.test(cId) && pId.trim() !== '') {
       setIsAuthenticated(true);
-      setUserId(id);
+      setClinicianId(cId);
+      setPatientId(pId);
       toast({
         title: "Login Successful",
-        description: `Welcome to CAS Admin Portal. User ID: ${id}`,
+        description: `Welcome to CAS Admin Portal. Connected to Patient ID: ${pId}`,
       });
       return true;
     } else {
       toast({
         title: "Login Failed",
-        description: "Please enter a valid 4-6 digit user ID",
+        description: "Please enter a valid 4-6 digit clinician ID and patient ID",
         variant: "destructive"
       });
       return false;
@@ -39,7 +41,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   const logout = () => {
     setIsAuthenticated(false);
-    setUserId(null);
+    setClinicianId(null);
+    setPatientId(null);
     toast({
       title: "Logged Out",
       description: "You have been successfully logged out"
@@ -47,7 +50,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   };
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, userId, login, logout }}>
+    <AuthContext.Provider value={{ isAuthenticated, clinicianId, patientId, login, logout }}>
       {children}
     </AuthContext.Provider>
   );

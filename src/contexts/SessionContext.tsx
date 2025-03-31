@@ -12,11 +12,12 @@ export interface SessionSummary {
     findings: string;
   }[];
   transcript: string;
+  assessmentType?: 'CAS' | 'VRAIE';
 }
 
 interface SessionContextType {
   sessionSummary: SessionSummary | null;
-  createSession: (patientId: string, selectedDomains: Domain[]) => void;
+  createSession: (patientId: string, selectedDomains: Domain[], assessmentType?: 'CAS' | 'VRAIE') => void;
   hasActiveSession: boolean;
 }
 
@@ -55,7 +56,7 @@ export const SessionProvider: React.FC<{ children: ReactNode }> = ({ children })
   const [sessionSummary, setSessionSummary] = useState<SessionSummary | null>(null);
   const [hasActiveSession, setHasActiveSession] = useState(false);
 
-  const createSession = (patientId: string, selectedDomains: Domain[]) => {
+  const createSession = (patientId: string, selectedDomains: Domain[], assessmentType: 'CAS' | 'VRAIE' = 'CAS') => {
     // For prototype, we generate a mock session with the selected domains
     const startTime = new Date();
     startTime.setHours(startTime.getHours() - 1); // Session started 1 hour ago
@@ -73,7 +74,8 @@ export const SessionProvider: React.FC<{ children: ReactNode }> = ({ children })
       startTime,
       endTime,
       domains: domainSummaries,
-      transcript: MOCK_TRANSCRIPT
+      transcript: MOCK_TRANSCRIPT,
+      assessmentType
     };
     
     setSessionSummary(newSession);

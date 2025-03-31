@@ -3,7 +3,16 @@ import React from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
-import { Home, ClipboardList, History, Settings, LogOut } from 'lucide-react';
+import { 
+  Home, 
+  ClipboardList, 
+  History, 
+  Settings, 
+  LogOut, 
+  Users, 
+  BarChart, 
+  Headset 
+} from 'lucide-react';
 
 const DemoIndicator = () => (
   <div className="fixed top-2 right-2 bg-yellow-400 text-yellow-800 text-xs px-2 py-1 rounded-full font-medium animate-pulse">
@@ -12,7 +21,7 @@ const DemoIndicator = () => (
 );
 
 const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { isAuthenticated, logout } = useAuth();
+  const { isAuthenticated, logout, patientId } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -34,6 +43,9 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
             <div className="rounded-md bg-cas-primary text-white font-bold text-xl p-2 mr-2">CAS</div>
             <div className="text-gray-700 font-medium">Admin Portal</div>
           </div>
+          <div className="mt-2 text-xs text-gray-500">
+            Connected to Patient: {patientId}
+          </div>
         </div>
         
         <nav className="flex-1 py-6">
@@ -44,17 +56,28 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
             active={location.pathname === '/dashboard'} 
           />
           <NavItem 
+            to="/assessment-type" 
+            label="New Assessment" 
+            icon={<Headset size={18} />} 
+            active={['/assessment-type', '/domains', '/monitoring'].includes(location.pathname)} 
+          />
+          <NavItem 
+            to="/summary" 
+            label="Current Session" 
+            icon={<BarChart size={18} />} 
+            active={location.pathname === '/summary'} 
+          />
+          <NavItem 
+            to="/multi-session" 
+            label="Session History" 
+            icon={<History size={18} />} 
+            active={location.pathname === '/multi-session'} 
+          />
+          <NavItem 
             to="/patients" 
             label="Patient Records" 
             icon={<ClipboardList size={18} />} 
             active={location.pathname === '/patients'} 
-            disabled
-          />
-          <NavItem 
-            to="/history" 
-            label="Session History" 
-            icon={<History size={18} />} 
-            active={location.pathname === '/history'} 
             disabled
           />
           <NavItem 

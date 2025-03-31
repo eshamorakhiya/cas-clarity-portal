@@ -7,10 +7,16 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useSession } from '@/contexts/SessionContext';
 import { useDomains, Domain } from '@/contexts/DomainContext';
 import { useToast } from "@/components/ui/use-toast";
-import { ChevronUp, ChevronDown, Check } from 'lucide-react';
+import { ChevronUp, ChevronDown, Check, Info } from 'lucide-react';
+import { 
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 const DomainSelection = () => {
-  const { isAuthenticated, userId } = useAuth();
+  const { isAuthenticated, patientId } = useAuth();
   const { createSession } = useSession();
   const { 
     availableDomains, 
@@ -54,12 +60,12 @@ const DomainSelection = () => {
       return;
     }
 
-    createSession(userId!, selectedDomains);
+    createSession(patientId!, selectedDomains);
     toast({
       title: "Session created",
       description: "Your assessment session has been created"
     });
-    navigate('/summary');
+    navigate('/monitoring');
   };
 
   const DomainCard = ({ domain, isSelected, index }: { domain: Domain; isSelected: boolean; index?: number }) => (
@@ -71,7 +77,21 @@ const DomainSelection = () => {
     >
       <div className="flex justify-between items-start">
         <div>
-          <h3 className="font-semibold text-gray-800">{domain.name}</h3>
+          <div className="flex items-center">
+            <h3 className="font-semibold text-gray-800">{domain.name}</h3>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <button className="ml-1">
+                    <Info className="h-4 w-4 text-gray-400" />
+                  </button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p className="max-w-xs">{domain.description}</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </div>
           <p className="text-sm text-gray-600">{domain.description}</p>
         </div>
         {isSelected ? (
@@ -129,6 +149,7 @@ const DomainSelection = () => {
             disabled={selectedDomains.length >= maxDomains}
             className="rounded-full"
           >
+            <Check className="mr-1 h-3 w-3" />
             Select
           </Button>
         )}
@@ -139,7 +160,12 @@ const DomainSelection = () => {
   return (
     <div className="container mx-auto animate-fade-in">
       <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold text-gray-800">Assessment Domain Selection</h1>
+        <div>
+          <h1 className="text-3xl font-bold text-gray-800">Assessment Domain Selection</h1>
+          <p className="text-gray-600">
+            Patient ID: {patientId}
+          </p>
+        </div>
       </div>
       
       <p className="text-gray-600 mb-6">

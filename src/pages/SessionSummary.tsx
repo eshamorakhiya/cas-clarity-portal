@@ -1,18 +1,21 @@
 
 import React, { useState } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { Separator } from '@/components/ui/separator';
 import { useAuth } from '@/contexts/AuthContext';
 import { useSession } from '@/contexts/SessionContext';
+import { useToast } from '@/components/ui/use-toast';
+import { Share, Calendar, FileUp } from 'lucide-react';
 
 const SessionSummary = () => {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, patientId } = useAuth();
   const { sessionSummary, hasActiveSession } = useSession();
   const [showTranscript, setShowTranscript] = useState(false);
   const navigate = useNavigate();
+  const { toast } = useToast();
 
   if (!isAuthenticated) {
     return <Navigate to="/" />;
@@ -26,6 +29,27 @@ const SessionSummary = () => {
     const diff = end.getTime() - start.getTime();
     const minutes = Math.floor(diff / 60000);
     return `${minutes} minutes`;
+  };
+
+  const handleSendToEHR = () => {
+    toast({
+      title: "Sent to EHR",
+      description: "Assessment report has been sent to the electronic health record system."
+    });
+  };
+
+  const handleShareWithPatient = () => {
+    toast({
+      title: "Shared with Patient",
+      description: "Assessment report has been shared with the patient portal."
+    });
+  };
+
+  const handleScheduleFollowup = () => {
+    toast({
+      title: "Follow-up Scheduling",
+      description: "The follow-up scheduling feature will be available in the full version."
+    });
   };
 
   return (
@@ -111,6 +135,20 @@ const SessionSummary = () => {
             </div>
           ))}
         </CardContent>
+        <CardFooter className="flex flex-col md:flex-row gap-4">
+          <Button className="w-full md:w-auto" onClick={handleSendToEHR}>
+            <FileUp className="mr-2 h-4 w-4" />
+            Send to EHR
+          </Button>
+          <Button className="w-full md:w-auto" onClick={handleShareWithPatient}>
+            <Share className="mr-2 h-4 w-4" />
+            Share with Patient
+          </Button>
+          <Button className="w-full md:w-auto" variant="outline" onClick={handleScheduleFollowup}>
+            <Calendar className="mr-2 h-4 w-4" />
+            Schedule Follow-up
+          </Button>
+        </CardFooter>
       </Card>
       
       <Card>

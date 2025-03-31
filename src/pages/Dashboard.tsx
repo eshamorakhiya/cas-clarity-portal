@@ -1,117 +1,151 @@
 
 import React from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useAuth } from '@/contexts/AuthContext';
-import { useSession } from '@/contexts/SessionContext';
+import { ChevronRight, Users, Clock, BarChart, CalendarDays, History } from 'lucide-react';
 
 const Dashboard = () => {
-  const { isAuthenticated, userId } = useAuth();
-  const { sessionSummary, hasActiveSession } = useSession();
+  const { isAuthenticated, clinicianId, patientId } = useAuth();
   const navigate = useNavigate();
 
   if (!isAuthenticated) {
     return <Navigate to="/" />;
   }
 
-  const handleStartNewSession = () => {
-    navigate('/domains');
-  };
+  // Today's date for display
+  const today = new Date();
+  const options: Intl.DateTimeFormatOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+  const formattedDate = today.toLocaleDateString('en-US', options);
 
   return (
     <div className="container mx-auto animate-fade-in">
-      <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold text-gray-800">Dashboard</h1>
-        <Button 
-          onClick={handleStartNewSession}
-          className="bg-cas-primary hover:bg-cas-dark text-white"
-        >
-          Start New Assessment
-        </Button>
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold text-gray-800">Welcome to CAS Admin Portal</h1>
+        <p className="text-gray-600 mt-2">
+          {formattedDate} • Clinician ID: {clinicianId} • Connected to Patient ID: {patientId}
+        </p>
       </div>
-      
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-lg">Patient ID</CardTitle>
+            <CardTitle className="text-base font-medium text-gray-500">Active Patients</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-3xl font-bold text-cas-primary">{userId}</p>
+            <div className="flex justify-between items-center">
+              <div className="text-3xl font-bold">1</div>
+              <Users className="h-8 w-8 text-cas-primary opacity-80" />
+            </div>
           </CardContent>
         </Card>
-        
+
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-lg">Assessment Sessions</CardTitle>
+            <CardTitle className="text-base font-medium text-gray-500">Sessions Today</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-3xl font-bold text-cas-primary">{hasActiveSession ? '1' : '0'}</p>
+            <div className="flex justify-between items-center">
+              <div className="text-3xl font-bold">3</div>
+              <CalendarDays className="h-8 w-8 text-cas-primary opacity-80" />
+            </div>
           </CardContent>
         </Card>
-        
+
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-lg">Status</CardTitle>
+            <CardTitle className="text-base font-medium text-gray-500">Pending Reports</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="flex items-center">
-              <div className={`w-3 h-3 rounded-full mr-2 ${hasActiveSession ? 'bg-green-500' : 'bg-yellow-500'}`}></div>
-              <p className="text-lg font-medium">{hasActiveSession ? 'Assessment Completed' : 'Ready for Assessment'}</p>
+            <div className="flex justify-between items-center">
+              <div className="text-3xl font-bold">2</div>
+              <Clock className="h-8 w-8 text-cas-primary opacity-80" />
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-base font-medium text-gray-500">Completed Sessions</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex justify-between items-center">
+              <div className="text-3xl font-bold">12</div>
+              <BarChart className="h-8 w-8 text-cas-primary opacity-80" />
             </div>
           </CardContent>
         </Card>
       </div>
-      
-      {hasActiveSession && sessionSummary ? (
-        <Card className="mb-8 animate-slide-in">
-          <CardHeader>
-            <CardTitle>Latest Assessment Summary</CardTitle>
-            <CardDescription>
-              Session #{sessionSummary.sessionNumber} • Completed {sessionSummary.endTime.toLocaleTimeString()} on {sessionSummary.endTime.toLocaleDateString()}
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {sessionSummary.domains.map((domainSummary) => (
-                <div key={domainSummary.domain.id} className="border-b pb-4 last:border-b-0">
-                  <h3 className="font-medium text-lg text-cas-dark mb-2">{domainSummary.domain.name}</h3>
-                  <p className="text-gray-700">{domainSummary.findings}</p>
-                </div>
-              ))}
-              <div className="pt-2">
-                <Button 
-                  variant="outline" 
-                  onClick={() => navigate('/summary')}
-                  className="w-full"
-                >
-                  View Full Summary
-                </Button>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      ) : (
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         <Card>
           <CardHeader>
-            <CardTitle>No Assessment Sessions</CardTitle>
+            <CardTitle>Patient Assessment</CardTitle>
             <CardDescription>
-              Start a new assessment to see results
+              Start a new assessment session with the current patient
             </CardDescription>
           </CardHeader>
           <CardContent>
             <p className="text-gray-600 mb-4">
-              Begin by selecting domains for your patient assessment. You can prioritize up to 5 domains based on clinical relevance.
+              Select the assessment type to begin the evaluation process. 
+              You'll be able to select and prioritize assessment domains after choosing a type.
             </p>
+          </CardContent>
+          <CardFooter>
             <Button 
-              onClick={handleStartNewSession}
-              className="bg-cas-primary hover:bg-cas-dark text-white"
+              className="w-full bg-cas-primary hover:bg-cas-dark" 
+              onClick={() => navigate('/assessment-type')}
             >
               Start New Assessment
+              <ChevronRight className="ml-2 h-4 w-4" />
             </Button>
-          </CardContent>
+          </CardFooter>
         </Card>
-      )}
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Previous Sessions</CardTitle>
+            <CardDescription>
+              View and manage previous assessment sessions
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3">
+              <div className="flex justify-between items-center p-2 hover:bg-gray-50 rounded-md cursor-pointer" onClick={() => navigate('/multi-session')}>
+                <div className="flex items-center">
+                  <History className="h-5 w-5 text-cas-primary mr-2" />
+                  <div>
+                    <p className="font-medium">Session History</p>
+                    <p className="text-sm text-gray-500">3 previous sessions</p>
+                  </div>
+                </div>
+                <ChevronRight className="h-5 w-5 text-gray-400" />
+              </div>
+              
+              <div className="flex justify-between items-center p-2 hover:bg-gray-50 rounded-md cursor-pointer" onClick={() => navigate('/summary')}>
+                <div className="flex items-center">
+                  <BarChart className="h-5 w-5 text-cas-primary mr-2" />
+                  <div>
+                    <p className="font-medium">Latest Assessment</p>
+                    <p className="text-sm text-gray-500">From today at 10:30 AM</p>
+                  </div>
+                </div>
+                <ChevronRight className="h-5 w-5 text-gray-400" />
+              </div>
+            </div>
+          </CardContent>
+          <CardFooter>
+            <Button 
+              variant="outline"
+              className="w-full" 
+              onClick={() => navigate('/multi-session')}
+            >
+              View All Sessions
+            </Button>
+          </CardFooter>
+        </Card>
+      </div>
     </div>
   );
 };

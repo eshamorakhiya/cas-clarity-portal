@@ -5,21 +5,23 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
+import { Label } from '@/components/ui/label';
 
 const Login = () => {
-  const [userId, setUserId] = useState('');
+  const [clinicianId, setClinicianId] = useState('');
+  const [patientId, setPatientId] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const { isAuthenticated, login } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    await login(userId);
+    await login(clinicianId, patientId);
     setIsLoading(false);
   };
 
   if (isAuthenticated) {
-    return <Navigate to="/dashboard" />;
+    return <Navigate to="/assessment-type" />;
   }
 
   return (
@@ -34,28 +36,40 @@ const Login = () => {
           <CardHeader>
             <CardTitle>Login</CardTitle>
             <CardDescription>
-              Enter your user ID to access the CAS Admin Portal
+              Enter your credentials to access the CAS Admin Portal
             </CardDescription>
           </CardHeader>
           <form onSubmit={handleSubmit}>
             <CardContent>
               <div className="space-y-4">
                 <div className="space-y-2">
-                  <label htmlFor="userId" className="text-sm font-medium text-gray-700">
-                    User ID
-                  </label>
+                  <Label htmlFor="clinicianId">Clinician ID</Label>
                   <Input
-                    id="userId"
+                    id="clinicianId"
                     type="text"
                     placeholder="Enter 4-6 digit ID"
-                    value={userId}
-                    onChange={(e) => setUserId(e.target.value)}
+                    value={clinicianId}
+                    onChange={(e) => setClinicianId(e.target.value)}
                     className="w-full"
                     required
                     pattern="\d{4,6}"
                     title="Please enter a 4-6 digit number"
                   />
                   <p className="text-xs text-gray-500">For demo, use ID: 1234</p>
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="patientId">Patient ID</Label>
+                  <Input
+                    id="patientId"
+                    type="text"
+                    placeholder="Enter patient ID"
+                    value={patientId}
+                    onChange={(e) => setPatientId(e.target.value)}
+                    className="w-full"
+                    required
+                  />
+                  <p className="text-xs text-gray-500">For demo, use any ID</p>
                 </div>
               </div>
             </CardContent>
