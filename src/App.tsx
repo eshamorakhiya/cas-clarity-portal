@@ -7,11 +7,9 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Layout from "./components/layout/Layout";
 import Index from "./pages/Index";
 import Dashboard from "./pages/Dashboard";
-import AssessmentTypeSelection from "./pages/AssessmentTypeSelection";
 import DomainSelection from "./pages/DomainSelection";
 import SessionMonitoring from "./pages/SessionMonitoring";
 import SessionSummary from "./pages/SessionSummary";
-import MultiSessionView from "./pages/MultiSessionView";
 import NotFound from "./pages/NotFound";
 import { AuthProvider } from "./contexts/AuthContext";
 import { DomainProvider } from "./contexts/DomainContext";
@@ -83,14 +81,6 @@ const App = () => {
                     }
                   />
                   <Route 
-                    path="/assessment-type" 
-                    element={
-                      <Layout>
-                        <AssessmentTypeSelection />
-                      </Layout>
-                    }
-                  />
-                  <Route 
                     path="/domains" 
                     element={
                       <Layout>
@@ -111,14 +101,6 @@ const App = () => {
                     element={
                       <Layout>
                         <SessionSummary />
-                      </Layout>
-                    }
-                  />
-                  <Route 
-                    path="/multi-session" 
-                    element={
-                      <Layout>
-                        <MultiSessionView />
                       </Layout>
                     }
                   />

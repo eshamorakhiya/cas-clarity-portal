@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { ChevronLeft, ChevronRight, Home, Headset, BarChart, History, ClipboardList, Settings, LogOut } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Home, Headset, BarChart, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
@@ -37,16 +37,13 @@ const SidebarCollapsible = () => {
 
   const links: SidebarLink[] = [
     { to: '/dashboard', label: 'Dashboard', icon: <Home size={20} /> },
-    { to: '/assessment-type', label: 'New Assessment', icon: <Headset size={20} /> },
-    { to: '/summary', label: 'Current Session', icon: <BarChart size={20} /> },
-    { to: '/multi-session', label: 'Session History', icon: <History size={20} /> },
-    { to: '/patients', label: 'Patient Records', icon: <ClipboardList size={20} />, disabled: true },
-    { to: '/settings', label: 'Settings', icon: <Settings size={20} />, disabled: true },
+    { to: '/domains', label: 'Domain Selection', icon: <Headset size={20} /> },
+    { to: '/summary', label: 'Session Summary', icon: <BarChart size={20} /> },
   ];
 
   const isActive = (path: string) => {
-    if (path === '/assessment-type') {
-      return ['/assessment-type', '/domains', '/monitoring'].includes(location.pathname);
+    if (path === '/domains') {
+      return ['/domains', '/monitoring'].includes(location.pathname);
     }
     return location.pathname === path;
   };
