@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -7,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Layout from "./components/layout/Layout";
 import Index from "./pages/Index";
 import Dashboard from "./pages/Dashboard";
+import Login from "./pages/Login";
 import DomainSelection from "./pages/DomainSelection";
 import SessionMonitoring from "./pages/SessionMonitoring";
 import SessionSummary from "./pages/SessionSummary";
@@ -28,7 +28,6 @@ const queryClient = new QueryClient({
 const App = () => {
   const [timeOfDay, setTimeOfDay] = useState('day');
   
-  // Set time-of-day based on current hour for subtle gradient changes
   useEffect(() => {
     const updateTimeOfDay = () => {
       const hour = new Date().getHours();
@@ -48,7 +47,7 @@ const App = () => {
     };
     
     updateTimeOfDay();
-    const interval = setInterval(updateTimeOfDay, 60000); // Check every minute
+    const interval = setInterval(updateTimeOfDay, 60000);
     
     return () => clearInterval(interval);
   }, []);
@@ -71,7 +70,7 @@ const App = () => {
               />
               <BrowserRouter>
                 <Routes>
-                  <Route path="/" element={<Index />} />
+                  <Route path="/" element={<Login />} />
                   <Route 
                     path="/dashboard" 
                     element={

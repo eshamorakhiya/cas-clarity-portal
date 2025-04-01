@@ -32,7 +32,7 @@ const Login = () => {
   };
 
   if (isAuthenticated) {
-    return <Navigate to="/assessment-type" />;
+    return <Navigate to="/dashboard" />;
   }
 
   return (
@@ -55,14 +55,14 @@ const Login = () => {
               <div className="bg-cas-primary p-2 rounded text-white mt-1">2</div>
               <div>
                 <h3 className="font-medium">Configure Assessment</h3>
-                <p className="text-gray-600">Customize domains and parameters for your session</p>
+                <p className="text-gray-600">Customize domains for your session</p>
               </div>
             </div>
             <div className="flex items-start space-x-3">
               <div className="bg-cas-primary p-2 rounded text-white mt-1">3</div>
               <div>
                 <h3 className="font-medium">View Results</h3>
-                <p className="text-gray-600">Analyze assessment data and export reports</p>
+                <p className="text-gray-600">Review assessment data</p>
               </div>
             </div>
           </div>
