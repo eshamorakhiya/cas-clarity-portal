@@ -37,12 +37,13 @@ const Login = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-cas-background p-4">
-      <div className="w-full max-w-md">
-        <div className="text-center mb-8">
+      <div className="w-full max-w-6xl flex flex-col md:flex-row items-center gap-8">
+        {/* Welcome Text - Left Side */}
+        <div className="w-full md:w-1/2 text-left">
           <h1 className="text-3xl font-bold text-gray-800 mb-2">Welcome to CAS Admin Portal</h1>
-          <p className="text-gray-600">Configure and manage patient assessment sessions through our integrated platform.</p>
+          <p className="text-gray-600 mb-8">Configure and manage patient assessment sessions through our integrated platform.</p>
           
-          <div className="flex flex-col gap-6 mt-8">
+          <div className="flex flex-col gap-6">
             <div className="flex items-start">
               <div className="flex-shrink-0 bg-cas-primary text-white rounded-full w-8 h-8 flex items-center justify-center font-bold mr-3">1</div>
               <div className="text-left">
@@ -69,44 +70,47 @@ const Login = () => {
           </div>
         </div>
         
-        <Card className="border-0 shadow-card animate-fade-in">
-          <CardHeader className="space-y-1">
-            <div className="flex items-center mb-4">
-              <div className="rounded-md bg-cas-primary text-white font-bold text-2xl p-2 mr-2">CAS</div>
-              <h2 className="text-xl font-medium">Admin Portal</h2>
-            </div>
-            <CardTitle className="text-2xl">Login</CardTitle>
-          </CardHeader>
-          <form onSubmit={handleSubmit}>
-            <CardContent>
-              <div className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="patientId" className="cas-label">Patient ID</Label>
-                  <Input
-                    id="patientId"
-                    type="text"
-                    placeholder="Enter 6-digit ID"
-                    value={patientId}
-                    onChange={(e) => setPatientId(e.target.value)}
-                    className="cas-input"
-                    required
-                    pattern="\d{6}"
-                    title="Please enter a 6-digit number"
-                  />
-                </div>
+        {/* Login Form - Right Side */}
+        <div className="w-full md:w-1/2">
+          <Card className="border-0 shadow-card animate-fade-in">
+            <CardHeader className="space-y-1">
+              <div className="flex items-center mb-4">
+                <div className="rounded-md bg-cas-primary text-white font-bold text-2xl p-2 mr-2">CAS</div>
+                <h2 className="text-xl font-medium">Admin Portal</h2>
               </div>
-            </CardContent>
-            <CardFooter>
-              <Button 
-                type="submit" 
-                className="w-full cas-btn-primary"
-                disabled={isLoading}
-              >
-                {isLoading ? 'Connecting...' : 'Connect'}
-              </Button>
-            </CardFooter>
-          </form>
-        </Card>
+              <CardTitle className="text-2xl">Login</CardTitle>
+            </CardHeader>
+            <form onSubmit={handleSubmit}>
+              <CardContent>
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="patientId" className="cas-label">Patient ID</Label>
+                    <Input
+                      id="patientId"
+                      type="text"
+                      placeholder="Enter 6-digit ID"
+                      value={patientId}
+                      onChange={(e) => setPatientId(e.target.value)}
+                      className="cas-input"
+                      required
+                      pattern="\d{6}"
+                      title="Please enter a 6-digit number"
+                    />
+                  </div>
+                </div>
+              </CardContent>
+              <CardFooter>
+                <Button 
+                  type="submit" 
+                  className="w-full cas-btn-primary"
+                  disabled={isLoading}
+                >
+                  {isLoading ? 'Connecting...' : 'Connect'}
+                </Button>
+              </CardFooter>
+            </form>
+          </Card>
+        </div>
       </div>
       
       {/* Demo Indicator */}
