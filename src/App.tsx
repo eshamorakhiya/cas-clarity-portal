@@ -3,7 +3,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Layout from "./components/layout/Layout";
 import Login from "./pages/Login";
 import DomainSelection from "./pages/DomainSelection";
@@ -69,6 +69,7 @@ const App = () => {
               <BrowserRouter>
                 <Routes>
                   <Route path="/" element={<Login />} />
+                  <Route path="/login" element={<Navigate to="/" replace />} />
                   <Route 
                     path="/domains" 
                     element={
@@ -85,6 +86,7 @@ const App = () => {
                       </Layout>
                     }
                   />
+                  <Route path="/dashboard" element={<Navigate to="/domains" replace />} />
                   <Route path="*" element={<NotFound />} />
                 </Routes>
               </BrowserRouter>

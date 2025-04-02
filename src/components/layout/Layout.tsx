@@ -54,12 +54,8 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const pathnames = location.pathname.split('/').filter(x => x);
     
     const breadcrumbMap: Record<string, { label: string, link: string }> = {
-      'dashboard': { label: 'Dashboard', link: '/dashboard' },
-      'assessment-type': { label: 'Assessment Type', link: '/assessment-type' },
       'domains': { label: 'Domain Selection', link: '/domains' },
-      'monitoring': { label: 'Session Monitoring', link: '/monitoring' },
-      'summary': { label: 'Session Summary', link: '/summary' },
-      'multi-session': { label: 'Session History', link: '/multi-session' }
+      'summary': { label: 'Sessions', link: '/summary' }
     };
     
     return pathnames.map((path, i) => {
@@ -90,7 +86,7 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
               <Breadcrumb>
                 <BreadcrumbList>
                   <BreadcrumbItem>
-                    <BreadcrumbLink href="/dashboard">Home</BreadcrumbLink>
+                    <BreadcrumbLink as={Link} to="/domains">Home</BreadcrumbLink>
                   </BreadcrumbItem>
                   
                   {breadcrumbItems.map((item, i) => (
@@ -100,7 +96,7 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
                         {item.isLast ? (
                           <BreadcrumbPage>{item.label}</BreadcrumbPage>
                         ) : (
-                          <BreadcrumbLink href={item.link}>{item.label}</BreadcrumbLink>
+                          <BreadcrumbLink as={Link} to={item.link}>{item.label}</BreadcrumbLink>
                         )}
                       </BreadcrumbItem>
                     </React.Fragment>
