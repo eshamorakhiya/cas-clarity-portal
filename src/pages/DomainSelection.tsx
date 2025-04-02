@@ -14,6 +14,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { toast } from "sonner";
 
 const DomainSelection = () => {
   const { isAuthenticated, patientId } = useAuth();
@@ -50,7 +51,21 @@ const DomainSelection = () => {
     }
   };
 
-  const handleStartSession = () => {
+  const saveDomainsToS3 = async (domains: Domain[], patientId: string) => {
+    // In a real implementation, this would make an API call to save to S3
+    // For demo purposes, we'll just simulate this
+    console.log(`Saving domains to augmend-llm-inputs-dev/sessions/${patientId}/domains.csv`);
+    
+    // Create CSV content with each domain on a new line
+    const csvContent = domains.map(domain => domain.name).join('\n');
+    console.log("CSV Content:", csvContent);
+    
+    // This is where you would actually call your backend API to save to S3
+    // For demo, we'll simulate success
+    return true;
+  };
+
+  const handleStartSession = async () => {
     if (selectedDomains.length === 0) {
       toast({
         title: "No domains selected",
@@ -60,12 +75,28 @@ const DomainSelection = () => {
       return;
     }
 
-    createSession(patientId!, selectedDomains);
-    toast({
-      title: "Session created",
-      description: "Your assessment session has been created"
-    });
-    navigate('/monitoring');
+    try {
+      // Save domains to S3
+      const saved = await saveDomainsToS3(selectedDomains, patientId!);
+      
+      if (saved) {
+        // Create the session with the selected domains
+        createSession(patientId!, selectedDomains);
+        toast({
+          title: "Domains saved",
+          description: "Your selection has been saved"
+        });
+        // Skip monitoring and go directly to sessions page
+        navigate('/summary');
+      }
+    } catch (error) {
+      console.error("Error saving domains:", error);
+      toast({
+        title: "Error",
+        description: "Failed to save domain selection",
+        variant: "destructive"
+      });
+    }
   };
 
   const DomainCard = ({ domain, isSelected, index }: { domain: Domain; isSelected: boolean; index?: number }) => (
@@ -161,7 +192,7 @@ const DomainSelection = () => {
     <div className="container mx-auto animate-fade-in">
       <div className="flex justify-between items-center mb-8">
         <div>
-          <h1 className="text-3xl font-bold text-gray-800">Assessment Domain Selection</h1>
+          <h1 className="text-3xl font-bold text-gray-800">Domain Selection</h1>
           <p className="text-gray-600">
             Patient ID: {patientId}
           </p>
@@ -169,8 +200,7 @@ const DomainSelection = () => {
       </div>
       
       <p className="text-gray-600 mb-6">
-        Select and prioritize up to {maxDomains} domains for this assessment session. Click domains to select them,
-        and use the arrows to reorder importance.
+        Select and prioritize up to {maxDomains} domains for this assessment session.
       </p>
       
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -247,7 +277,7 @@ const DomainSelection = () => {
                 disabled={selectedDomains.length === 0}
                 onClick={handleStartSession}
               >
-                Start Assessment Session
+                Save and Continue
               </Button>
             </div>
           </CardContent>

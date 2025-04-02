@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { ChevronLeft, ChevronRight, Home, Headset, BarChart, LogOut } from 'lucide-react';
+import { ChevronLeft, ChevronRight, List, BarChart, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
@@ -18,7 +18,7 @@ const SidebarCollapsible = () => {
   const [collapsed, setCollapsed] = useState(false);
   const [screenWidth, setScreenWidth] = useState(window.innerWidth);
   const location = useLocation();
-  const { clinicianId, patientId, logout } = useAuth();
+  const { patientId, logout } = useAuth();
 
   // Auto-collapse on smaller screens
   useEffect(() => {
@@ -36,17 +36,11 @@ const SidebarCollapsible = () => {
   }, []);
 
   const links: SidebarLink[] = [
-    { to: '/dashboard', label: 'Dashboard', icon: <Home size={20} /> },
-    { to: '/domains', label: 'Domain Selection', icon: <Headset size={20} /> },
-    { to: '/summary', label: 'Session Summary', icon: <BarChart size={20} /> },
+    { to: '/domains', label: 'Domain Selection', icon: <List size={20} /> },
+    { to: '/summary', label: 'Sessions', icon: <BarChart size={20} /> },
   ];
 
-  const isActive = (path: string) => {
-    if (path === '/domains') {
-      return ['/domains', '/monitoring'].includes(location.pathname);
-    }
-    return location.pathname === path;
-  };
+  const isActive = (path: string) => location.pathname === path;
 
   return (
     <div 
@@ -71,10 +65,10 @@ const SidebarCollapsible = () => {
       </div>
       
       {/* User Info - Only shown when expanded */}
-      {!collapsed && (
+      {!collapsed && patientId && (
         <div className="px-6 py-3 border-b border-cas-border">
           <div className="text-xs text-gray-500">
-            Clinician ID: {clinicianId} | Patient: {patientId}
+            Patient ID: {patientId}
           </div>
         </div>
       )}

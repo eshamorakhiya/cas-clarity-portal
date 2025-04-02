@@ -1,15 +1,13 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Layout from "./components/layout/Layout";
-import Index from "./pages/Index";
-import Dashboard from "./pages/Dashboard";
 import Login from "./pages/Login";
 import DomainSelection from "./pages/DomainSelection";
-import SessionMonitoring from "./pages/SessionMonitoring";
-import SessionSummary from "./pages/SessionSummary";
+import Sessions from "./pages/Sessions";
 import NotFound from "./pages/NotFound";
 import { AuthProvider } from "./contexts/AuthContext";
 import { DomainProvider } from "./contexts/DomainContext";
@@ -72,14 +70,6 @@ const App = () => {
                 <Routes>
                   <Route path="/" element={<Login />} />
                   <Route 
-                    path="/dashboard" 
-                    element={
-                      <Layout>
-                        <Dashboard />
-                      </Layout>
-                    }
-                  />
-                  <Route 
                     path="/domains" 
                     element={
                       <Layout>
@@ -88,18 +78,10 @@ const App = () => {
                     }
                   />
                   <Route 
-                    path="/monitoring" 
-                    element={
-                      <Layout>
-                        <SessionMonitoring />
-                      </Layout>
-                    }
-                  />
-                  <Route 
                     path="/summary" 
                     element={
                       <Layout>
-                        <SessionSummary />
+                        <Sessions />
                       </Layout>
                     }
                   />
