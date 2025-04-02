@@ -38,6 +38,37 @@ const Login = () => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-cas-background p-4">
       <div className="w-full max-w-md">
+        <div className="text-center mb-8">
+          <h1 className="text-3xl font-bold text-gray-800 mb-2">Welcome to CAS Admin Portal</h1>
+          <p className="text-gray-600">Configure and manage patient assessment sessions through our integrated platform.</p>
+          
+          <div className="flex flex-col gap-6 mt-8">
+            <div className="flex items-start">
+              <div className="flex-shrink-0 bg-cas-primary text-white rounded-full w-8 h-8 flex items-center justify-center font-bold mr-3">1</div>
+              <div className="text-left">
+                <h3 className="font-medium text-gray-800">Connect to Patient</h3>
+                <p className="text-sm text-gray-600">Enter your credentials to link with a patient session</p>
+              </div>
+            </div>
+            
+            <div className="flex items-start">
+              <div className="flex-shrink-0 bg-gray-300 text-gray-700 rounded-full w-8 h-8 flex items-center justify-center font-bold mr-3">2</div>
+              <div className="text-left">
+                <h3 className="font-medium text-gray-600">Configure Assessment</h3>
+                <p className="text-sm text-gray-500">Customize domains for your session</p>
+              </div>
+            </div>
+            
+            <div className="flex items-start">
+              <div className="flex-shrink-0 bg-gray-300 text-gray-700 rounded-full w-8 h-8 flex items-center justify-center font-bold mr-3">3</div>
+              <div className="text-left">
+                <h3 className="font-medium text-gray-600">View Results</h3>
+                <p className="text-sm text-gray-500">Review assessment data</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        
         <Card className="border-0 shadow-card animate-fade-in">
           <CardHeader className="space-y-1">
             <div className="flex items-center mb-4">
