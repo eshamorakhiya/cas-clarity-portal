@@ -86,7 +86,7 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
               <Breadcrumb>
                 <BreadcrumbList>
                   <BreadcrumbItem>
-                    <BreadcrumbLink as={Link} to="/domains">Home</BreadcrumbLink>
+                    <Link to="/domains" className="transition-colors hover:text-foreground">Home</Link>
                   </BreadcrumbItem>
                   
                   {breadcrumbItems.map((item, i) => (
@@ -96,7 +96,7 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
                         {item.isLast ? (
                           <BreadcrumbPage>{item.label}</BreadcrumbPage>
                         ) : (
-                          <BreadcrumbLink as={Link} to={item.link}>{item.label}</BreadcrumbLink>
+                          <Link to={item.link} className="transition-colors hover:text-foreground">{item.label}</Link>
                         )}
                       </BreadcrumbItem>
                     </React.Fragment>
