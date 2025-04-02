@@ -1,12 +1,10 @@
-
-import React from 'react';
+import React, { useState } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
 import { useSession } from '@/contexts/SessionContext';
 import { useDomains, Domain } from '@/contexts/DomainContext';
-import { useToast } from "@/components/ui/use-toast";
 import { ChevronUp, ChevronDown, Check, Info } from 'lucide-react';
 import { 
   Tooltip,
@@ -15,6 +13,20 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { toast } from "sonner";
+import { v4 as uuidv4 } from 'uuid';
+import { 
+  S3Client, 
+  PutObjectCommand,
+  S3ServiceException 
+} from '@aws-sdk/client-s3';
+
+const s3Client = new S3Client({
+  region: 'us-east-1',
+  credentials: {
+    accessKeyId: 'YOUR_ACCESS_KEY_ID',
+    secretAccessKey: 'YOUR_SECRET_ACCESS_KEY',
+  }
+});
 
 const DomainSelection = () => {
   const { isAuthenticated, patientId } = useAuth();
@@ -30,8 +42,9 @@ const DomainSelection = () => {
     resetOrder,
     maxDomains 
   } = useDomains();
-  const { toast } = useToast();
   const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(false);
+  const [savedSessionId, setSavedSessionId] = useState<string | null>(null);
 
   if (!isAuthenticated) {
     return <Navigate to="/" />;
@@ -51,18 +64,68 @@ const DomainSelection = () => {
     }
   };
 
-  const saveDomainsToS3 = async (domains: Domain[], patientId: string) => {
-    // In a real implementation, this would make an API call to save to S3
-    // For demo purposes, we'll just simulate this
-    console.log(`Saving domains to augmend-llm-inputs-dev/sessions/${patientId}/domains.csv`);
+  const saveDomainsToS3 = async (domains: Domain[], patientId: string): Promise<string> => {
+    const sessionId = uuidv4();
     
-    // Create CSV content with each domain on a new line
     const csvContent = domains.map(domain => domain.name).join('\n');
-    console.log("CSV Content:", csvContent);
     
-    // This is where you would actually call your backend API to save to S3
-    // For demo, we'll simulate success
-    return true;
+    const s3Path = `sessions/${patientId}/${sessionId}/domains.csv`;
+    
+    try {
+      const command = new PutObjectCommand({
+        Bucket: 'augmend-llm-inputs-dev',
+        Key: s3Path,
+        Body: csvContent,
+        ContentType: 'text/csv',
+      });
+      
+      await s3Client.send(command);
+      console.log(`Successfully uploaded domain data to S3: ${s3Path}`);
+      
+      return sessionId;
+    } catch (error) {
+      console.error("Error uploading to S3:", error);
+      
+      localStorage.setItem(`domain-data-${sessionId}`, csvContent);
+      localStorage.setItem(`domain-data-${sessionId}-pendingUpload`, 'true');
+      
+      if (error instanceof S3ServiceException) {
+        throw new Error(`S3 error (${error.name}): ${error.message}`);
+      } else {
+        throw new Error(`Failed to save domains: ${(error as Error).message}`);
+      }
+    }
+  };
+
+  const retryPendingUploads = async () => {
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key && key.endsWith('-pendingUpload')) {
+        const dataKey = key.replace('-pendingUpload', '');
+        const data = localStorage.getItem(dataKey);
+        const sessionId = dataKey.split('-').pop();
+        
+        if (data && sessionId) {
+          try {
+            const command = new PutObjectCommand({
+              Bucket: 'augmend-llm-inputs-dev',
+              Key: `sessions/${patientId}/${sessionId}/domains.csv`,
+              Body: data,
+              ContentType: 'text/csv',
+            });
+            
+            await s3Client.send(command);
+            
+            localStorage.removeItem(key);
+            localStorage.removeItem(dataKey);
+            
+            toast.success("Successfully uploaded pending data to S3");
+          } catch (error) {
+            console.error("Failed to upload pending data:", error);
+          }
+        }
+      }
+    }
   };
 
   const handleStartSession = async () => {
@@ -75,27 +138,36 @@ const DomainSelection = () => {
       return;
     }
 
+    setIsLoading(true);
+    let sessionId: string | null = null;
+
     try {
-      // Save domains to S3
-      const saved = await saveDomainsToS3(selectedDomains, patientId!);
+      await retryPendingUploads();
       
-      if (saved) {
-        // Create the session with the selected domains
-        createSession(patientId!, selectedDomains);
-        toast({
-          title: "Domains saved",
-          description: "Your selection has been saved"
-        });
-        // Skip monitoring and go directly to sessions page
-        navigate('/summary');
-      }
+      sessionId = await saveDomainsToS3(selectedDomains, patientId!);
+      setSavedSessionId(sessionId);
+      
+      createSession(patientId!, selectedDomains);
+      
+      toast.success("Domains saved", {
+        description: `Session ID: ${sessionId}`,
+        position: "bottom-right"
+      });
+      
+      navigate(`/summary?sessionId=${sessionId}`);
     } catch (error) {
       console.error("Error saving domains:", error);
-      toast({
-        title: "Error",
-        description: "Failed to save domain selection",
-        variant: "destructive"
+      toast.error("Error saving domains", {
+        description: error instanceof Error ? error.message : "An unknown error occurred",
+        position: "bottom-right"
       });
+      
+      if (sessionId) {
+        createSession(patientId!, selectedDomains);
+        navigate(`/summary?sessionId=${sessionId}&localOnly=true`);
+      }
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -204,7 +276,6 @@ const DomainSelection = () => {
       </p>
       
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {/* Available Domains */}
         <Card>
           <CardHeader>
             <CardTitle>Available Domains</CardTitle>
@@ -227,7 +298,6 @@ const DomainSelection = () => {
           </CardContent>
         </Card>
         
-        {/* Selected Domains */}
         <Card>
           <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle>Selected Domains ({selectedDomains.length}/{maxDomains})</CardTitle>
@@ -274,10 +344,10 @@ const DomainSelection = () => {
             <div className="mt-6">
               <Button
                 className="w-full bg-cas-primary hover:bg-cas-dark"
-                disabled={selectedDomains.length === 0}
+                disabled={selectedDomains.length === 0 || isLoading}
                 onClick={handleStartSession}
               >
-                Save and Continue
+                {isLoading ? 'Saving to S3...' : 'Save and Continue'}
               </Button>
             </div>
           </CardContent>

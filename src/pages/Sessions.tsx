@@ -1,17 +1,32 @@
 
-import React, { useState } from 'react';
-import { Navigate, useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Navigate, useNavigate, useLocation } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { useAuth } from '@/contexts/AuthContext';
 import { useSession } from '@/contexts/SessionContext';
+import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
+import { ExclamationTriangleIcon } from '@radix-ui/react-icons';
 
 const Sessions = () => {
   const { isAuthenticated, patientId } = useAuth();
   const { sessionSummary, hasActiveSession } = useSession();
   const [showTranscript, setShowTranscript] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
+  
+  // Extract session ID and local flag from URL
+  const queryParams = new URLSearchParams(location.search);
+  const sessionId = queryParams.get('sessionId');
+  const localOnly = queryParams.get('localOnly') === 'true';
+
+  useEffect(() => {
+    // Log the session ID when component mounts
+    if (sessionId) {
+      console.log(`Session ID: ${sessionId}`);
+    }
+  }, [sessionId]);
 
   if (!isAuthenticated) {
     return <Navigate to="/" />;
@@ -28,6 +43,7 @@ const Sessions = () => {
           <h1 className="text-3xl font-bold text-gray-800">Sessions</h1>
           <p className="text-gray-600">
             Patient ID: {sessionSummary.patientId}
+            {sessionId && <span className="ml-2">• Session ID: {sessionId}</span>}
           </p>
         </div>
         <Button 
@@ -37,6 +53,16 @@ const Sessions = () => {
           Select New Domains
         </Button>
       </div>
+      
+      {localOnly && (
+        <Alert variant="destructive" className="mb-6">
+          <ExclamationTriangleIcon className="h-4 w-4" />
+          <AlertTitle>S3 Storage Failed</AlertTitle>
+          <AlertDescription>
+            Your domain selections were saved locally only. The data will be uploaded to S3 automatically when connectivity is restored.
+          </AlertDescription>
+        </Alert>
+      )}
       
       <Card className="mb-8">
         <CardHeader>
