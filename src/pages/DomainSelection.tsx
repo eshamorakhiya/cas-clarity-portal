@@ -57,8 +57,7 @@ const DomainSelection = () => {
       selectDomain(domain);
     } else {
       toast("Selection limit reached", {
-        description: `You can only select up to ${maxDomains} domains`,
-        variant: "destructive"
+        description: `You can only select up to ${maxDomains} domains`
       });
     }
   };
@@ -130,8 +129,7 @@ const DomainSelection = () => {
   const handleStartSession = async () => {
     if (selectedDomains.length === 0) {
       toast("No domains selected", {
-        description: "Please select at least one domain before starting the session",
-        variant: "destructive"
+        description: "Please select at least one domain before starting the session"
       });
       return;
     }

@@ -86,6 +86,7 @@ const App = () => {
                       </Layout>
                     }
                   />
+                  <Route path="/sessions" element={<Navigate to="/summary" replace />} />
                   <Route path="/dashboard" element={<Navigate to="/domains" replace />} />
                   <Route path="*" element={<NotFound />} />
                 </Routes>
