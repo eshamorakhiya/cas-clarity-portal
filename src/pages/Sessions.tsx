@@ -7,7 +7,7 @@ import { Switch } from '@/components/ui/switch';
 import { useAuth } from '@/contexts/AuthContext';
 import { useSession } from '@/contexts/SessionContext';
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
-import { ExclamationTriangleIcon } from '@radix-ui/react-icons';
+import { AlertTriangle } from 'lucide-react';
 
 const Sessions = () => {
   const { isAuthenticated, patientId } = useAuth();
@@ -56,7 +56,7 @@ const Sessions = () => {
       
       {localOnly && (
         <Alert variant="destructive" className="mb-6">
-          <ExclamationTriangleIcon className="h-4 w-4" />
+          <AlertTriangle className="h-4 w-4" />
           <AlertTitle>S3 Storage Failed</AlertTitle>
           <AlertDescription>
             Your domain selections were saved locally only. The data will be uploaded to S3 automatically when connectivity is restored.
